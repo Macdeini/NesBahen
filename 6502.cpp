@@ -441,14 +441,14 @@ int Nes6502::CPX()
     set_c(x >= *operand);
     set_z(x == *operand);
     set_n(((x - *operand) >> 7) == 1);
-    return 1;
+    return 0;
 }
 int Nes6502::CPY()
 {
     set_c(y >= *operand);
     set_z(y == *operand);
     set_n(((y - *operand) >> 7) == 1);
-    return 1;
+    return 0;
 }
 
 
