@@ -25,17 +25,25 @@ public:
 
     // Basic Components
     uint16_t pc = 0x0000;
-    uint8_t sp = 0x00;
+    uint8_t sp = 0xff;
     uint8_t a = 0x00;
     uint8_t x = 0x00;
     uint8_t y = 0x00;
     int cycles = 0;
 
+    // The address range $0100 and $01ff is designated for the stack
+    // the stack pointer is only 1 byte so its automatically offset
+    // i.e sp = 0x40 designates the address $0140
+    // the stack pointer also starts at 0xff and decreases as items are pushed
+    // pop is often reffered to as pull in 6502 documentation
+    const uint16_t s_offset = 0x0100;
+    void s_push(uint8_t data);
+    uint8_t s_pop();
+
     // Flags related variables
     // From High to low: Negative Overflow Unused Break Decimal Interrupt Zero Carry
     // Decimal is unused 
-    uint8_t flags = 0b11111111;
-    uint8_t status = 0x00;
+    uint8_t status = 0b11111111;
     // These functions take in either 1 or 0 
     void set_c(uint8_t num); void set_z(uint8_t num);
     void set_i(uint8_t num); void set_b(uint8_t num); 
@@ -129,6 +137,7 @@ public:
 
     // Opcodes:
     // Returns 1 if more clock cycles can be needed, 0 otherwise.
+    // Except for branch instructions which return the amount of extra cycles needed.
     // Returned result is multipled with addressing mode if more cycles are needed
     int ADC(); int AND(); int ASL(); int BCC(); 
     int BCS(); int BEQ(); int BIT(); int BMI(); 
@@ -147,6 +156,9 @@ public:
 
     int RIP(); // Placeholder for undefined
 
+    void interrupt();
+    void reset();
+    void breakprg();
 
     // Cycles is incremented/decremented here
     void emulate_cycle();
