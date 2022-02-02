@@ -36,13 +36,14 @@ public:
     // Decimal is unused 
     uint8_t flags = 0b11111111;
     uint8_t status = 0x00;
+    // These functions take in either 1 or 0 
     void set_c(uint8_t num); void set_z(uint8_t num);
     void set_i(uint8_t num); void set_b(uint8_t num); 
     void set_o(uint8_t num); void set_n(uint8_t num);  
     
-    void get_c(); void get_z();
-    void get_i(); void get_b(); 
-    void get_o(); void get_n();  
+    uint8_t get_c(); uint8_t get_z();
+    uint8_t get_i(); uint8_t get_b(); 
+    uint8_t get_o(); uint8_t get_n();  
 
     // 1 byte = 8 bits = 2 hex digits
     // used to store opcode byte
@@ -91,6 +92,7 @@ public:
     // fetch is only used under the context of setting operand to a value in memory
     // helper function for addressing functions
     void fetch();
+    void fetch_indirect();
 
     // Struct for instruction information
     struct Instruction {

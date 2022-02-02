@@ -52,7 +52,60 @@ void Nes6502::fetch()
 {
     operand = bus->fetch(this->addr);
 }
+void Nes6502::fetch_indirect()
+{
+    operand = bus->fetch(this->addr_indirect);
+}
 
+void Nes6502::set_c(uint8_t n)
+{
+    flags = (flags & 0b11111110) | (n << 0);
+}
+void Nes6502::set_z(uint8_t n)
+{
+    flags = (flags & 0b11111101) | (n << 1);
+}
+void Nes6502::set_i(uint8_t n)
+{
+    flags = (flags & 0b11111011) | (n << 2);
+}
+void Nes6502::set_b(uint8_t n)
+{
+    flags = (flags & 0b11101111) | (n << 4);
+}
+void Nes6502::set_o(uint8_t n)
+{
+    flags = (flags & 0b10111111) | (n << 6);
+}
+void Nes6502::set_n(uint8_t n)
+{
+    flags = (flags & 0b01111111) | (n << 7);
+}
+
+uint8_t Nes6502::get_c()
+{
+    return (flags & 0b00000001) >> 0;
+}
+uint8_t Nes6502::get_z()
+{
+    return (flags & 0b00000010) >> 1;
+}
+uint8_t Nes6502::get_i()
+{
+    return (flags & 0b00000100) >> 2;
+}
+uint8_t Nes6502::get_b()
+{
+    return (flags & 0b00010000) >> 4;
+}
+uint8_t Nes6502::get_o()
+{
+    return (flags & 0b01000000) >> 6;
+}
+uint8_t Nes6502::get_n()
+{
+    return (flags & 0b10000000) >> 7;
+}
 /*
 * Addressing modes 
 */
@@ -160,6 +213,7 @@ int Nes6502::IND()
     pc++;
     addr = (addr_high << 8) | addr_low;
     addr_indirect = (read(addr + 1) << 8) | read(addr);
+    fetch_indirect();
     return 0;
 }
 
@@ -168,6 +222,7 @@ int Nes6502::IDX()
     addr = (read(pc) + x) & 0xff;
     pc++;
     addr_indirect = (read(addr + 1) << 8) | read(addr);
+    fetch_indirect();
     return 0;
 }
 
@@ -178,11 +233,33 @@ int Nes6502::IDY()
     addr_indirect = (read(addr + 1) << 8) | read(addr);
     uint16_t addr_indirect_before = addr_indirect;
     addr_indirect += y;
+    fetch_indirect();
     if ((addr_indirect & 0xff00) - (addr_indirect_before & 0xff00) != 0)
         return 1;
     return 0;
 }
 
+/*
+* Opcodes
+*/
+int Nes6502::ADC()
+{
+    uint8_t temp_a = a;
+    uint16_t temp_ans = a + *operand + get_c();
+    a += *operand + get_c();
+    set_c(temp_ans > 0xff);
+    set_z(a == 0);
+    set_o(((temp_a ^ a) & (temp_a ^ *operand)) == 1);
+    set_n((a >> 7 == 1));
+    return 1;
+}
+int Nes6502::AND()
+{   
+    a &= *operand;
+    set_z(a == 0);
+    set_n((a >> 7 == 1));
+    return 1;
+}
 
 
 // Functions for unused operations
@@ -190,7 +267,6 @@ int Nes6502::BAD()
 {
     return 0;
 }
-
 int Nes6502::RIP()
 {
     return 0;
