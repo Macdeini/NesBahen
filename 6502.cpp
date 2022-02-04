@@ -2,10 +2,175 @@
 
 Nes6502::Nes6502()
 {   
-    for (int i = 0; i < (int)table.size(); i++) {
-        table[i] = {"RIP", "BAD", &RIP, &BAD, 5};
+    for (auto &i : table) {
+        i = {"RIP", "BAD", &RIP, &BAD, 5};
     }
+    table[0x00] = {"BRK", "IMM", &BRK, &IMM, 7};
+    table[0x01] = {"ORA", "IDX", &ORA, &IDX, 6};
+    table[0x05] = {"ORA", "ZPA", &ORA, &ZPA, 3};
+    table[0x06] = {"ASL", "ZPA", &ASL, &ZPA, 5};
+    table[0x08] = {"PHP", "IMP", &PHP, &IMP, 3};
+    table[0x09] = {"ORA", "IMM", &ORA, &IMM, 2};
+    table[0x0A] = {"ASL", "ACC", &ASL, &ACC, 2};
+    table[0x0D] = {"ORA", "ABS", &ORA, &ABS, 4};
+    table[0x0E] = {"ASL", "ABS", &ASL, &ABS, 6};
+
+    table[0x10] = {"BPL", "REL", &BPL, &REL, 2};
+    table[0x11] = {"ORA", "IDY", &ORA, &IDY, 5};
+    table[0x15] = {"ORA", "ZPX", &ORA, &ZPX, 4};
+    table[0x16] = {"ASL", "ZPX", &ASL, &ZPX, 6};
+    table[0x18] = {"CLC", "IMP", &CLC, &IMP, 2};
+    table[0x19] = {"ORA", "ABY", &ORA, &ABY, 4};
+    table[0x1D] = {"ORA", "ABX", &ORA, &ABX, 4};
+    table[0x1E] = {"ASL", "ABX", &ASL, &ABX, 7};
+
+    table[0x20] = {"JSR", "ABS", &JSR, &ABS, 6};
+    table[0x21] = {"AND", "IDX", &AND, &IDX, 6};
+    table[0x24] = {"BIT", "ZPA", &BIT, &ZPA, 3};
+    table[0x25] = {"AND", "ZPA", &AND, &ZPA, 3};
+    table[0x26] = {"ROL", "ZPA", &ROL, &ZPA, 5};
+    table[0x28] = {"PLP", "IMP", &PLP, &IMP, 4};
     table[0x29] = {"AND", "IMM", &AND, &IMM, 2};
+    table[0x2A] = {"ROL", "ACC", &ROL, &ACC, 2};
+    table[0x2C] = {"BIT", "ABS", &BIT, &ABS, 4};
+    table[0x2D] = {"AND", "ABS", &AND, &ABS, 4};
+    table[0x2E] = {"ROL", "ABS", &ROL, &ABS, 6};
+
+    table[0x30] = {"BMI", "REL", &BMI, &REL, 2};
+    table[0x31] = {"AND", "IDY", &AND, &IDY, 5};
+    table[0x35] = {"AND", "ZPX", &AND, &ZPX, 4};
+    table[0x36] = {"ROL", "ZPX", &ROL, &ZPX, 6};
+    table[0x38] = {"SEC", "IMP", &SEC, &IMP, 2};
+    table[0x39] = {"AND", "ABY", &AND, &ABY, 4};
+    table[0x3D] = {"AND", "ABX", &AND, &ABX, 4};
+    table[0x3E] = {"ROL", "ABX", &ROL, &ABX, 7};
+
+    table[0x40] = {"RTI", "IMP", &RTI, &IMP, 6};
+    table[0x41] = {"EOR", "IDX", &EOR, &IDX, 6};
+    table[0x45] = {"EOR", "ZPA", &EOR, &ZPA, 3};
+    table[0x46] = {"LSR", "ZPA", &LSR, &ZPA, 5};
+    table[0x48] = {"PHA", "IMP", &PHA, &IMP, 3};
+    table[0x49] = {"EOR", "IMM", &EOR, &IMM, 2};
+    table[0x4A] = {"LSR", "ACC", &LSR, &ACC, 2};
+    table[0x4C] = {"JMP", "ABS", &JMP, &ABS, 3};
+    table[0x4D] = {"EOR", "ABS", &EOR, &ABS, 4};
+    table[0x4E] = {"LSR", "ABS", &LSR, &ABS, 6};
+    
+    table[0x50] = {"BVC", "REL", &BVC, &REL, 2};
+    table[0x51] = {"EOR", "IDY", &EOR, &IDY, 5};
+    table[0x55] = {"EOR", "ZPX", &EOR, &ZPX, 4};
+    table[0x56] = {"LSR", "ZPX", &LSR, &ZPX, 6};
+    table[0x58] = {"CLI", "IMP", &CLI, &IMP, 2};
+    table[0x59] = {"EOR", "ABY", &EOR, &ABY, 4};
+    table[0x5D] = {"EOR", "ABX", &EOR, &ABX, 4};
+    table[0x5E] = {"LSR", "ABX", &LSR, &ABX, 7};
+
+    table[0x60] = {"RTS", "IMP", &RTS, &IMP, 6};
+    table[0x61] = {"ADC", "IDX", &ADC, &IDX, 6};
+    table[0x65] = {"ADC", "ZPA", &ADC, &ZPA, 3};
+    table[0x66] = {"ROR", "ZPA", &ROR, &ZPA, 5};
+    table[0x68] = {"PLA", "IMP", &PLA, &IMP, 4};
+    table[0x69] = {"ADC", "IMM", &ADC, &IMM, 2};
+    table[0x6A] = {"ROR", "ACC", &ROR, &ACC, 2};
+    table[0x6C] = {"JMP", "IND", &JMP, &IND, 5};
+    table[0x6D] = {"ADC", "ABS", &ADC, &ABS, 4};
+    table[0x6E] = {"ROR", "ABS", &ROR, &ABS, 6};
+    
+    table[0x70] = {"BVS", "REL", &BVS, &REL, 2};
+    table[0x71] = {"ADC", "IDY", &ADC, &IDY, 5};
+    table[0x75] = {"ADC", "ZPX", &ADC, &ZPX, 4};
+    table[0x76] = {"ROR", "ZPX", &ROR, &ZPX, 6};
+    table[0x78] = {"SEI", "IMP", &SEI, &IMP, 2};
+    table[0x79] = {"ADC", "ABY", &ADC, &ABY, 4};
+    table[0x7D] = {"ADC", "ABX", &ADC, &ABX, 4};
+    table[0x7E] = {"ROR", "ABX", &ROR, &ABX, 7};
+
+    table[0x81] = {"STA", "IDX", &STA, &IDX, 6};
+    table[0x84] = {"STY", "ZPA", &STY, &ZPA, 3};
+    table[0x85] = {"STA", "ZPA", &STA, &ZPA, 3};
+    table[0x86] = {"STX", "ZPA", &STX, &ZPA, 3};
+    table[0x88] = {"DEY", "IMP", &DEY, &IMP, 2};
+    table[0x8A] = {"TXA", "IMP", &TXA, &IMP, 2};
+    table[0x8C] = {"STY", "ABS", &STY, &ABS, 4};
+    table[0x8D] = {"STA", "ABS", &STA, &ABS, 4};
+    table[0x8E] = {"STX", "ABS", &STX, &ABS, 4};
+
+    table[0x90] = {"BCC", "REL", &BCC, &REL, 2};
+    table[0x91] = {"STA", "IDY", &STA, &IDY, 6};
+    table[0x94] = {"STY", "ZPX", &STY, &ZPX, 4};
+    table[0x95] = {"STA", "ZPX", &STA, &ZPX, 4};
+    table[0x96] = {"STX", "ZPY", &STX, &ZPY, 4};
+    table[0x98] = {"TYA", "IMP", &TYA, &IMP, 2};
+    table[0x99] = {"STA", "ABY", &STA, &ABY, 5};
+    table[0x9A] = {"TXS", "IMP", &TXS, &IMP, 2};
+    table[0x9D] = {"STA", "ABX", &STA, &ABX, 5};
+
+    table[0xA0] = {"LDY", "IMM", &LDY, &IMM, 2};
+    table[0xA1] = {"LDA", "IDX", &LDA, &IDX, 6};
+    table[0xA2] = {"LDX", "IMM", &LDX, &IMM, 2};
+    table[0xA4] = {"LDY", "ZPA", &LDY, &ZPA, 3};
+    table[0xA5] = {"LDA", "ZPA", &LDA, &ZPA, 3};
+    table[0xA6] = {"LDX", "ZPA", &LDX, &ZPA, 3};
+    table[0xA8] = {"TAY", "IMP", &TAY, &IMP, 2};
+    table[0xA9] = {"LDA", "IMM", &LDA, &IMM, 2};
+    table[0xAA] = {"TAX", "IMP", &TAX, &IMP, 2};
+    table[0xAC] = {"LDY", "ABS", &LDY, &ABS, 4};
+    table[0xAD] = {"LDA", "ABS", &LDA, &ABS, 4};
+    table[0xAE] = {"LDX", "ABS", &LDX, &ABS, 4};
+
+    table[0xB0] = {"BCS", "REL", &BCS, &REL, 2};
+    table[0xB1] = {"LDA", "IDY", &LDA, &IDY, 5};
+    table[0xB4] = {"LDY", "ZPX", &LDY, &ZPX, 4};
+    table[0xB5] = {"LDA", "ZPX", &LDA, &ZPX, 4};
+    table[0xB6] = {"LDX", "ZPY", &LDX, &ZPY, 4};
+    table[0xB8] = {"CLV", "IMP", &CLV, &IMP, 2};
+    table[0xB9] = {"LDA", "ABY", &LDA, &ABY, 4};
+    table[0xBA] = {"TSX", "IMP", &TSX, &IMP, 2};
+    table[0xBC] = {"LDY", "ABX", &LDY, &ABX, 4};
+    table[0xBD] = {"LDA", "ABX", &LDA, &ABX, 4};
+    table[0xBE] = {"LDX", "ABY", &LDX, &ABY, 4};
+
+    table[0xC0] = {"CPY", "IMM", &CPY, &IMM, 2};
+    table[0xC1] = {"CMP", "IDX", &CMP, &IDX, 6};
+    table[0xC4] = {"CPY", "ZPA", &CPY, &ZPA, 3};
+    table[0xC5] = {"CMP", "ZPA", &CMP, &ZPA, 3};
+    table[0xC6] = {"DEC", "ZPA", &DEC, &ZPA, 5};
+    table[0xC8] = {"INY", "IMP", &INY, &IMP, 2};
+    table[0xC9] = {"CMP", "IMM", &CMP, &IMM, 2};
+    table[0xCA] = {"DEX", "IMP", &DEX, &IMP, 2};
+    table[0xCC] = {"CPY", "ABS", &CPY, &ABS, 4};
+    table[0xCD] = {"CMP", "ABS", &CMP, &ABS, 4};
+    table[0xCE] = {"DEC", "ABS", &DEC, &ABS, 6};
+
+    table[0xD0] = {"BNE", "REL", &BNE, &REL, 2};
+    table[0xD1] = {"CMP", "IDY", &CMP, &IDY, 5};
+    table[0xD5] = {"CMP", "ZPX", &CMP, &ZPX, 4};
+    table[0xD6] = {"DEC", "ZPX", &DEC, &ZPX, 6};
+    table[0xD8] = {"CLD", "IMP", &CLD, &IMP, 2};
+    table[0xD9] = {"CMP", "ABY", &CMP, &ABY, 4};
+    table[0xDD] = {"CMP", "ABX", &CMP, &ABX, 4};
+    table[0xDE] = {"DEC", "ABX", &DEC, &ABX, 7};
+
+    table[0xE0] = {"CPX", "IMM", &CPX, &IMM, 2};
+    table[0xE1] = {"SBC", "IDX", &SBC, &IDX, 6};
+    table[0xE4] = {"CPX", "ZPA", &CPX, &ZPA, 3};
+    table[0xE5] = {"SBC", "ZPA", &SBC, &ZPA, 3};
+    table[0xE6] = {"INC", "ZPA", &INC, &ZPA, 5};
+    table[0xE8] = {"INX", "IMP", &INX, &IMP, 2};
+    table[0xE9] = {"SBC", "IMM", &SBC, &IMM, 2};
+    table[0xEA] = {"NOP", "IMP", &NOP, &IMP, 2};
+    table[0xEC] = {"CPX", "ABS", &CPX, &ABS, 4};
+    table[0xED] = {"SBC", "ABS", &SBC, &ABS, 4};
+    table[0xEE] = {"INC", "ABS", &INC, &ABS, 6};
+
+    table[0xF0] = {"BEQ", "REL", &BEQ, &REL, 2};
+    table[0xF1] = {"SBC", "IDY", &SBC, &IDY, 5};
+    table[0xF5] = {"SBC", "ZPX", &SBC, &ZPX, 4};
+    table[0xF6] = {"INC", "ZPX", &INC, &ZPX, 6};
+    table[0xF8] = {"SED", "IMP", &SED, &IMP, 2};
+    table[0xF9] = {"SBC", "ABY", &SBC, &ABY, 4};
+    table[0xFD] = {"SBC", "ABX", &SBC, &ABX, 4};
+    table[0xFE] = {"INC", "ABX", &INC, &ABX, 7};
 }
 
 Nes6502::~Nes6502()
@@ -450,6 +615,245 @@ int Nes6502::CPY()
     set_n(((y - *operand) >> 7) == 1);
     return 0;
 }
+int Nes6502::DEC()
+{
+    *operand -= 1;
+    set_z(*operand == 0);
+    set_n((*operand >> 7) == 1);
+    return 0;
+}
+int Nes6502::DEX()
+{
+    x -= 1;
+    set_z(x == 0);
+    set_n((x >> 7) == 1);
+    return 0;
+}
+int Nes6502::DEY()
+{
+    y -= 1;
+    set_z(y == 0);
+    set_n((y >> 7) == 1);
+    return 0;
+}
+int Nes6502::EOR()
+{
+    a = a ^ *operand;
+    set_z(a == 0);
+    set_n((a >> 7) == 1);
+    return 1;
+}
+int Nes6502::INC()
+{
+    *operand += 1;
+    set_z(*operand == 0);
+    set_n((*operand >> 7) == 1);
+    return 0;
+}
+int Nes6502::INX()
+{
+    x += 1;
+    set_z(x == 0);
+    set_n((x >> 7) == 1);
+    return 0;
+}
+int Nes6502::INY()
+{
+    y += 1;
+    set_z(y == 0);
+    set_n((y >> 7) == 1);
+    return 0;
+}
+int Nes6502::JMP()
+{   
+    pc = *operand;
+    return 0;
+}
+// Might be finicky with how im pushing pc
+// Online sources say push pc - 1 but that doesnt make sense to me 
+// With how I'm doing it pc is going to point to the next instruction byte after jmp addrlow addrhigh
+// by the time we reach here. We save pc, jmp and go do something else,
+// and then return to the byte of the next instruction
+int Nes6502::JSR()
+{
+    s_push(pc);
+    pc = *operand;
+    return 0;
+}
+int Nes6502::LDA()
+{
+    a = *operand;
+    set_z(a == 0);
+    set_n((a >> 7) == 1);
+    return 1;
+}
+int Nes6502::LDX()
+{
+    x = *operand;
+    set_z(x == 0);
+    set_n((x >> 7) == 1);
+    return 1;
+}
+int Nes6502::LDY()
+{
+    y = *operand;
+    set_z(y == 0);
+    set_n((y >> 7) == 1);
+    return 1;
+}
+int Nes6502::LSR()
+{
+    set_c((*operand >> 7)== 1);
+    *operand = *operand >> 1;
+    set_n((*operand >> 7)== 1);
+    set_z(*operand == 0);
+    return 0;
+}
+int Nes6502::NOP()
+{
+    return 0;
+}
+int Nes6502::ORA()
+{
+    a = a | *operand;
+    set_z(a == 0);
+    set_n((a >> 7) == 1);
+    return 1;
+}
+int Nes6502::PHA()
+{
+    s_push(a);
+    return 0;
+}
+int Nes6502::PHP()
+{
+    s_push(status);
+    return 0;
+}
+int Nes6502::PLA()
+{
+    a = s_pop();
+    set_z(a == 0);
+    set_n((a >> 7) == 1);
+    return 0;
+}
+int Nes6502::PLP()
+{
+    status = s_pop();
+    return 0;
+}
+int Nes6502::ROL()
+{
+    int temp = get_c();
+    set_c(*operand >> 7);
+    *operand = *operand << 1;
+    *operand = *operand & 0b11111110;
+    *operand = *operand | temp;
+    return 0;
+}
+int Nes6502::ROR()
+{
+    int temp = get_c();
+    set_c(*operand & 0b00000001);
+    *operand = *operand >> 1;
+    *operand = *operand & 0b01111111;
+    *operand = *operand | (temp << 7);
+    return 0;
+}
+int Nes6502::RTI()
+{
+    status = s_pop();
+    int low = s_pop();
+    int high = s_pop();
+    pc = (high << 8) | low;
+    return 0;
+}
+int Nes6502::RTS()
+{
+    pc = s_pop();
+    return 0;
+}
+int Nes6502::SBC()
+{
+    uint16_t temp1 = *operand ^ 0x00ff; // getting complement
+    uint16_t temp2 = a + temp1 + get_c();
+    set_c(temp2 & 0xff00);
+    set_z((temp2 & 0x00ff) == 0);
+    set_o((temp2 ^ a) & (temp2 ^ temp1) & 0x0080);
+    set_n(temp2 & 0x0080);
+    return 1;
+}
+int Nes6502::SEC()
+{
+    set_c(1);
+    return 0; 
+}
+int Nes6502::SED()
+{
+    // set_d(1);
+    return 0;
+}
+int Nes6502::SEI()
+{
+    set_i(1);
+    return 0;
+}
+int Nes6502::STA()
+{
+    *operand = a;
+    return 0;
+}
+int Nes6502::STX()
+{
+    *operand = x;
+    return 0;
+}
+int Nes6502::STY()
+{
+    *operand = y;
+    return 0;
+}
+int Nes6502::TAX()
+{
+    x = a;
+    set_z(x == 0);
+    set_n((x >> 7) == 1);
+    return 0;
+}
+int Nes6502::TAY()
+{
+    y = a;
+    set_z(y == 0);
+    set_n((y >> 7) == 1);
+    return 0;
+}
+int Nes6502::TSX()
+{
+    x = sp;
+    set_z(x == 0);
+    set_n((x >> 7) == 1);
+    return 0;
+}
+int Nes6502::TXA()
+{
+    a = x;
+    set_z(a == 0);
+    set_n(a >> 7);
+    return 0;
+}
+int Nes6502::TXS()
+{
+    sp = x;
+    return 0;
+}
+int Nes6502::TYA()
+{
+    a = y;
+    set_z(a == 0);
+    set_n(a >> 7);
+    return 0;
+}
+
 
 
 
