@@ -187,16 +187,32 @@ void Nes6502::emulate_cycle()
     // Termination of the program depends on what opcode is called
     if (cycles == 0){
         opcode = read(pc);
+
+        print_instruction();
+
         pc++;
+        
         
         cycles += table[opcode].cycles;
         
         int extra_cycles = (this->*table[opcode].addrmode)();
+
         int need_extra = (this->*table[opcode].operation)();
-        
+
+
+        // std::cout <<  "addr: " << std::hex << (int)addr << std::endl; 
+        // std::cout <<  "operand: " << std::hex << (int)  *operand << std::endl; 
+
         cycles += need_extra & extra_cycles;
     }
     cycles--;
+}
+
+void Nes6502::print_instruction()
+{
+    std::cout << "New Call:" << std::endl;
+    std::cout << "  " << table[opcode].opcode_name << " " << table[opcode].addrmode_name << std::endl;
+    std::cout << "  PC: " << std::hex << pc << std::endl;
 }
 
 /*

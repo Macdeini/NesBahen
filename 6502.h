@@ -1,5 +1,4 @@
 #pragma once
-
 #include <stdint.h>
 #include <array>
 #include <iostream>
@@ -162,4 +161,5 @@ public:
 
     // Cycles is incremented/decremented here
     void emulate_cycle();
+    void print_instruction();
 };

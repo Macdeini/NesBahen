@@ -1,0 +1,35 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: g++.exe build active file",
+			"command": "C:\\mingw64\\bin\\g++.exe",
+			"args": [
+				"-g",
+				"-std=c++17",
+				"${workspaceFolder}\\*.cpp",
+				"-o",
+				"${fileDirname}\\prog.exe",										
+				"-luser32",
+				"-lgdi32",
+				"-lgdiplus",
+				"-lopengl32",
+				"-lShlwapi",
+				"-ldwmapi",
+				"-lstdc++fs"
+			],
+			"options": {
+				"cwd": "C:\\mingw64\\bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: C:\\mingw64\\bin\\g++.exe"
+		}
+	]
+}

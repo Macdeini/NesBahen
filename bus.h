@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include "6502.h"
 
 /*
 * Bus class for transferring data along the machine
