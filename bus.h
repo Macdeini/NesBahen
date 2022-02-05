@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include "6502.h"
+#include "cartridge.h"
 
 /*
 * Bus class for transferring data along the machine
@@ -14,10 +15,16 @@ public:
     ~Bus();
 
     // Devices connected to the bus
-    std::array<uint8_t, 0xFFFF+1> ram;
+    std::array<uint8_t, 0x0800> cpu_ram;
     Nes6502* cpu = nullptr;
+    Cartridge* cartridge = nullptr;
 
-    void write(uint16_t addr, uint8_t data);
-    uint8_t read(uint16_t addr);
+    void set_cpu(Nes6502* cpu);
+    void set_cartridge(Cartridge* c);
+
+    void cpu_write(uint16_t addr, uint8_t data);
+    uint8_t cpu_read(uint16_t addr);
+
+    // Only used by cpu
     uint8_t* fetch(uint16_t addr);
 };

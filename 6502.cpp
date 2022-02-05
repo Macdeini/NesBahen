@@ -226,12 +226,12 @@ void Nes6502::connect_bus(Bus* b)
 
 void Nes6502::write(uint16_t addr, uint8_t data)
 {
-    bus->write(addr, data);
+    bus->cpu_write(addr, data);
 }
 
 uint8_t Nes6502::read(uint16_t addr)
 {
-    return bus->read(addr);
+    return bus->cpu_read(addr);
 }
 
 void Nes6502::fetch()
