@@ -24,7 +24,7 @@ public:
 
     // Basic Components
     uint16_t pc = 0x0000;
-    uint8_t sp = 0xff;
+    uint8_t sp = 0xfd;
     uint8_t a = 0x00;
     uint8_t x = 0x00;
     uint8_t y = 0x00;
@@ -42,7 +42,7 @@ public:
     // Flags related variables
     // From High to low: Negative Overflow Unused Break Decimal Interrupt Zero Carry
     // Decimal is unused 
-    uint8_t status = 0b11111111;
+    uint8_t status = 0b00011000;
     // These functions take in either 1 or 0 
     void set_c(uint8_t num); void set_z(uint8_t num);
     void set_i(uint8_t num); void set_b(uint8_t num); 
@@ -65,35 +65,8 @@ public:
     uint16_t addr_indirect = 0x0000;
     // Used for branch instruction addressing
     int8_t offset = 0x00;
+    uint16_t jumpaddr = 0x0000;
 
-    // Addressing modes can either refer to data in memory via a hex number stored with the instruction
-    // or by storing the value itself with the instruction. 
-    // For example:
-    // LDA $AA sets accum = ram[0x00AA] 
-    // LDA $AAAA sets accum = ram[0xAAAA]
-    // LDA #AA sets accum = 0xAA
-    // The opcode function itself shouldn't worry about addressing,
-    // it should be given its value to operate upon and not worry about anything more.
-    // Thus the addressing function stores the value retrived in operand, and then the opcode function uses it later.
-    // operand is a pointer because it will need to be able to edit values within memory.
-    
-    // Sometimes you want to edit ram contents so you have a reference to ram values 
-    // Sometimes you want to edit registers so you need a reference to registers and edit them
-    // Sometimes the value is written within the code so you set operand to that, but because of possible
-    // pointer arithmetic mess ups you set the value to the temp variable and then have operand point to that.
-    // For example: 
-    // operand  = ram.fetch(addr)
-    // then later
-    // *operand = *operand << 1 
-    
-    // Temp is used to store values retrieved through immediate addressing without overwriting what operand points to.
-    // For example:
-    // ASL A shift accum left so operand points to cpu.a and shifts it left,
-    // but then the cpu reads LDX #AA and goes to add AA to cpu.x. The addressing mode must store AA 
-    // somewhere for the opcode function to later add to cpu.x, but where does it store it?
-    // we can't do *operand = 0xAA because that would overwrite cpu.a which is not good. 
-    // Thus we have to AA temporarily in temp and then have operand point to temp, to avoid
-    // possibly overwiting anything important.
     uint8_t temp = 0x00;
     uint8_t* operand = &temp;
     // fetch is only used under the context of setting operand to a value in memory
@@ -162,4 +135,5 @@ public:
     // Cycles is incremented/decremented here
     void emulate_cycle();
     void print_instruction();
+    void print_status();
 };

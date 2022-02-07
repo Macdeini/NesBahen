@@ -81,6 +81,16 @@ void Cartridge::write_prg(uint16_t addr, uint8_t data)
     if (bank_num == 1)
         prg_rom[addr & 0x3fff] = data;  // mirroring for smaller bank size
 }
+uint8_t* Cartridge::fetch(uint16_t addr)
+{
+    if (addr < 0 || addr >= 0x8000)
+        return nullptr;
+    if (bank_num == 2)
+        return &prg_rom[addr];
+    if (bank_num == 1)
+        return &prg_rom[addr & 0x3fff]; // mirroring for smaller bank size
+    return nullptr;
+}
 
 Cartridge::~Cartridge()
 {

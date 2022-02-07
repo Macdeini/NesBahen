@@ -179,30 +179,18 @@ Nes6502::~Nes6502()
 
 void Nes6502::emulate_cycle() 
 {
-    // Cycles = 0 indicates a new opcode is to be called
-    // That function is called and the cycles is set accordingly
-    // emulate_cycle is called the appropriate amount of times 
-    // until cycles is 0 again, indicating the current opcode is done 
-    // and the new opcode is to be executed
-    // Termination of the program depends on what opcode is called
     if (cycles == 0){
         opcode = read(pc);
-
+        
         print_instruction();
+        print_status();
 
         pc++;
         
-        
         cycles += table[opcode].cycles;
-        
         int extra_cycles = (this->*table[opcode].addrmode)();
-
         int need_extra = (this->*table[opcode].operation)();
-
-
-        // std::cout <<  "addr: " << std::hex << (int)addr << std::endl; 
-        // std::cout <<  "operand: " << std::hex << (int)  *operand << std::endl; 
-
+    
         cycles += need_extra & extra_cycles;
     }
     cycles--;
@@ -210,9 +198,18 @@ void Nes6502::emulate_cycle()
 
 void Nes6502::print_instruction()
 {
-    std::cout << "New Call:" << std::endl;
-    std::cout << "  " << table[opcode].opcode_name << " " << table[opcode].addrmode_name << std::endl;
-    std::cout << "  PC: " << std::hex << pc << std::endl;
+    std::cout << std::hex << int(pc) << "  ";
+    std::cout << std::hex << (int)read(pc) << " " << std::hex << (int)read(pc+1) << " " << std::hex << (int)read(pc+2) << "  "; 
+    std::cout << "  " << table[opcode].opcode_name << " " << table[opcode].addrmode_name;
+}
+void Nes6502::print_status()
+{
+    std::cout << "                       ";
+    std::cout << "A:" << std::hex << int(a) << " ";
+    std::cout << "X:" << std::hex << int(x) << " ";
+    std::cout << "Y:" << std::hex << int(y) << " ";
+    std::cout << "P:" << std::hex << int(status) << " ";
+    std::cout << "SP:" << std::hex << int(sp) << " " << std::endl;
 }
 
 /*
@@ -331,6 +328,7 @@ int Nes6502::ABS()
     addr_high = read(pc);
     pc++;
     addr = (addr_high << 8) | addr_low;
+    jumpaddr = addr;
     fetch();
     return 0;
 }
@@ -682,7 +680,7 @@ int Nes6502::INY()
 }
 int Nes6502::JMP()
 {   
-    pc = *operand;
+    pc = addr;
     return 0;
 }
 // Might be finicky with how im pushing pc
@@ -692,8 +690,9 @@ int Nes6502::JMP()
 // and then return to the byte of the next instruction
 int Nes6502::JSR()
 {
-    s_push(pc);
-    pc = *operand;
+    s_push(pc >> 8); // high
+    s_push(pc & 0xff); // low 
+    pc = jumpaddr;
     return 0;
 }
 int Nes6502::LDA()
@@ -786,7 +785,9 @@ int Nes6502::RTI()
 }
 int Nes6502::RTS()
 {
-    pc = s_pop();
+    int lo = s_pop();
+    int hi = s_pop();
+    pc = (hi << 8) | lo;
     return 0;
 }
 int Nes6502::SBC()
