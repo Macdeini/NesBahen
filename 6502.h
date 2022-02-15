@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "bus.h"
+#include <iomanip>
 
 /*
 * 1) Read opcode byte at pc

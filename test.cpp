@@ -15,18 +15,17 @@ int main(){
     cpu.connect_bus(&bus);
     bus.set_cpu(&cpu);
     Cartridge test;
-    // bus.set_cartridge(&test);
+    bus.set_cartridge(&test);
     
     cpu.pc = 0xC000;
 
-    for (int i = 0; i < cpu.table.size(); i++){
-        if (cpu.table[i].opcode_name != "RIP")
-            std::cout << std::hex << i << " " << cpu.table[i].opcode_name << std::endl;
+    for (int i = 0; i < 25; i++){
+        cpu.emulate_cycle();
     }
 
-    do {
-        cpu.emulate_cycle();
-    } while(cpu.pc != 0xc66e);
+    // do {
+    //     cpu.emulate_cycle();
+    // } while(cpu.pc != 0xc66e);
 
 
     return 0;

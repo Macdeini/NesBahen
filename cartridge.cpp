@@ -27,8 +27,9 @@ Cartridge::Cartridge()
         i = 0x00;
     for(auto &i : prg_ram)
         i = 0x00;
-        
+
     dump_rom();
+
     bank_num = dump[4];
     vrom_num = dump[5];
     control_byte_1 = dump[6];
@@ -50,15 +51,20 @@ Cartridge::Cartridge()
     int offset = 16;
 
     if (bank_num == 2) {
-        for (offset; offset < 0x8000 + 16; offset++)
+        for (offset; offset < 0x8000 + 16; offset++) {
             prg_rom[offset - 16] = dump[offset];
-        for (offset; offset < 0x8000 + 16 + 0x4000; offset++)
+        }
+        for (offset; offset < 0x8000 + 16 + 0x2000; offset++) {
             chr_rom[offset - 0x8000 - 16] = dump[offset];
+        }
     } else {
-        for (offset; offset < 0x4000 + 16; offset++)
+        for (offset; offset < 0x4000 + 16; offset++) {
             prg_rom[offset - 16] = dump[offset];
-        for (offset; offset < 0x4000 + 16 + 0x4000; offset++)
+            prg_rom[offset - 16 + 0x4000] = dump[offset];
+        }
+        for (offset; offset < 0x4000 + 16 + 0x2000; offset++) { // me when
             chr_rom[offset - 0x4000 - 16] = dump[offset]; 
+        }
     }
 }
 

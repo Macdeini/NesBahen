@@ -199,7 +199,9 @@ void Nes6502::emulate_cycle()
 void Nes6502::print_instruction()
 {
     std::cout << std::hex << int(pc) << "  ";
-    std::cout << std::hex << (int)read(pc) << " " << std::hex << (int)read(pc+1) << " " << std::hex << (int)read(pc+2) << "  "; 
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc) << " ";
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc+1) << " ";
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc+2) << "  "; 
     std::cout << "  " << table[opcode].opcode_name << " " << table[opcode].addrmode_name;
 }
 void Nes6502::print_status()
@@ -208,7 +210,7 @@ void Nes6502::print_status()
     std::cout << "A:" << std::hex << int(a) << " ";
     std::cout << "X:" << std::hex << int(x) << " ";
     std::cout << "Y:" << std::hex << int(y) << " ";
-    std::cout << "P:" << std::hex << int(status) << " ";
+    std::cout << "P:" << std::dec << int(status) << " ";
     std::cout << "SP:" << std::hex << int(sp) << " " << std::endl;
 }
 
