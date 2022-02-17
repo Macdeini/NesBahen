@@ -30,6 +30,7 @@ public:
     uint8_t x = 0x00;
     uint8_t y = 0x00;
     int cycles = 0;
+    int total_cycles = 7;
 
     // The address range $0100 and $01ff is designated for the stack
     // the stack pointer is only 1 byte so its automatically offset
@@ -43,15 +44,16 @@ public:
     // Flags related variables
     // From High to low: Negative Overflow Unused Break Decimal Interrupt Zero Carry
     // Decimal is unused 
-    uint8_t status = 0b00011000;
+    uint8_t status = 0b00100100;
     // These functions take in either 1 or 0 
     void set_c(uint8_t num); void set_z(uint8_t num);
     void set_i(uint8_t num); void set_b(uint8_t num); 
-    void set_o(uint8_t num); void set_n(uint8_t num);  
+    void set_v(uint8_t num); void set_n(uint8_t num);  
+    void set_d(uint8_t num); void set_u(uint8_t num);
     
     uint8_t get_c(); uint8_t get_z();
     uint8_t get_i(); uint8_t get_b(); 
-    uint8_t get_o(); uint8_t get_n();  
+    uint8_t get_v(); uint8_t get_n();  
 
     // 1 byte = 8 bits = 2 hex digits
     // used to store opcode byte

@@ -181,7 +181,7 @@ void Nes6502::emulate_cycle()
 {
     if (cycles == 0){
         opcode = read(pc);
-        
+
         print_instruction();
         print_status();
 
@@ -192,13 +192,14 @@ void Nes6502::emulate_cycle()
         int need_extra = (this->*table[opcode].operation)();
     
         cycles += need_extra & extra_cycles;
+        total_cycles += cycles;
     }
     cycles--;
 }
 
 void Nes6502::print_instruction()
 {
-    std::cout << std::hex << int(pc) << "  ";
+    std::cout << std::hex << std::setfill('0') << std::setw(4) << int(pc) << "  ";
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc) << " ";
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc+1) << " ";
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc+2) << "  "; 
@@ -206,12 +207,13 @@ void Nes6502::print_instruction()
 }
 void Nes6502::print_status()
 {
-    std::cout << "                       ";
-    std::cout << "A:" << std::hex << int(a) << " ";
-    std::cout << "X:" << std::hex << int(x) << " ";
-    std::cout << "Y:" << std::hex << int(y) << " ";
-    std::cout << "P:" << std::dec << int(status) << " ";
-    std::cout << "SP:" << std::hex << int(sp) << " " << std::endl;
+    std::cout << "                ";
+    std::cout << "A:" << std::hex << std::setfill('0') << std::setw(2) << int(a) << " ";
+    std::cout << "X:" << std::hex << std::setfill('0') << std::setw(2) << int(x) << " ";
+    std::cout << "Y:" << std::hex << std::setfill('0') << std::setw(2) << int(y) << " ";
+    std::cout << "P:" << std::hex << std::setfill('0') << std::setw(2) << int(status) << " ";
+    std::cout << "SP:" << std::hex << std::setfill('0') << std::setw(2) << int(sp) << " ";
+    std::cout << "CYC:" << std::dec << int(total_cycles) << " " << std::endl;
 }
 
 /*
@@ -242,7 +244,7 @@ void Nes6502::fetch_indirect()
     operand = bus->fetch(this->addr_indirect);
 }
 
-// Flag setters
+// Flag setters: n is 0 or 1 
 void Nes6502::set_c(uint8_t n)
 {
     status = (status & 0b11111110) | (n << 0);
@@ -259,13 +261,21 @@ void Nes6502::set_b(uint8_t n)
 {
     status = (status & 0b11101111) | (n << 4);
 }
-void Nes6502::set_o(uint8_t n)
+void Nes6502::set_v(uint8_t n)
 {
     status = (status & 0b10111111) | (n << 6);
 }
 void Nes6502::set_n(uint8_t n)
 {
     status = (status & 0b01111111) | (n << 7);
+}
+void Nes6502::set_d(uint8_t n)
+{
+    status = (status & 0b11110111) | (n << 3);
+}
+void Nes6502::set_u(uint8_t n)
+{
+    status = (status & 0b11110111) | (n << 5);
 }
 
 // Flag getters
@@ -285,7 +295,7 @@ uint8_t Nes6502::get_b()
 {
     return (status & 0b00010000) >> 4;
 }
-uint8_t Nes6502::get_o()
+uint8_t Nes6502::get_v()
 {
     return (status & 0b01000000) >> 6;
 }
@@ -445,12 +455,14 @@ int Nes6502::IDY()
 */
 int Nes6502::ADC()
 {
-    uint8_t temp_a = a;
-    uint16_t temp_ans = a + *operand + get_c();
-    a += *operand + get_c();
-    set_c(temp_ans > 0xff);
+    uint16_t ans = a + *operand + get_c();
+    uint8_t msba = a >> 7;
+    uint8_t msbr = ans >> 15;
+    uint8_t msbm = *operand >> 7;
+    set_v((msba ^ msbr) & ~(msba ^ msbm));
+    a = ans;
+    set_c(a > 0xff);
     set_z(a == 0);
-    set_o(((temp_a ^ a) & (temp_a ^ *operand)) == 1);
     set_n((a >> 7 == 1));
     return 1;
 }
@@ -511,7 +523,7 @@ int Nes6502::BEQ()
 int Nes6502::BIT()
 {   
     set_z((a & *operand) == 0);
-    set_o((*operand >> 6) & 0b01);
+    set_v((*operand >> 6) & 0b01);
     set_n(*operand >> 7);
     return 0;
 }
@@ -559,14 +571,17 @@ int Nes6502::BRK()
     pc++;
     s_push(pc >> 8);
     s_push(pc & 0x00ff);
+    uint8_t temp = status;
     set_b(1);
+    // set_u(1);
     s_push(status);
+    status = temp;
     pc = (read(0xffff) << 8) | read(0xfffe);
     return 0;
 }
 int Nes6502::BVC()
 {
-    if (get_o() == 0){
+    if (get_v() == 0){
         uint16_t old_pc = pc;
         pc += offset;
         if ((pc & 0xff00) - (old_pc & 0xff00) != 0) {
@@ -579,7 +594,7 @@ int Nes6502::BVC()
 }
 int Nes6502::BVS()
 {
-    if (get_o() == 1){
+    if (get_v() == 1){
         uint16_t old_pc = pc;
         pc += offset;
         if ((pc & 0xff00) - (old_pc & 0xff00) != 0) {
@@ -597,7 +612,7 @@ int Nes6502::CLC()
 }
 int Nes6502::CLD()
 {
-    // Decimal flag unused
+    set_d(0);
     return 0;
 }
 int Nes6502::CLI()
@@ -607,7 +622,7 @@ int Nes6502::CLI()
 }
 int Nes6502::CLV()
 {
-    set_o(0);
+    set_v(0);
     return 0;
 }
 int Nes6502::CMP()
@@ -744,7 +759,11 @@ int Nes6502::PHA()
 }
 int Nes6502::PHP()
 {
+    uint8_t temp = status;
+    set_b(1);
+    // set_u(1);
     s_push(status);
+    status = temp;
     return 0;
 }
 int Nes6502::PLA()
@@ -757,6 +776,8 @@ int Nes6502::PLA()
 int Nes6502::PLP()
 {
     status = s_pop();
+    set_b(0);
+    set_u(1);
     return 0;
 }
 int Nes6502::ROL()
@@ -780,6 +801,8 @@ int Nes6502::ROR()
 int Nes6502::RTI()
 {
     status = s_pop();
+    set_b(0);
+    set_u(1);
     int low = s_pop();
     int high = s_pop();
     pc = (high << 8) | low;
@@ -798,7 +821,7 @@ int Nes6502::SBC()
     uint16_t temp2 = a + temp1 + get_c();
     set_c(temp2 & 0xff00);
     set_z((temp2 & 0x00ff) == 0);
-    set_o((temp2 ^ a) & (temp2 ^ temp1) & 0x0080);
+    set_v((temp2 ^ a) & (temp2 ^ temp1) & 0x0080);
     set_n(temp2 & 0x0080);
     return 1;
 }
@@ -809,7 +832,7 @@ int Nes6502::SEC()
 }
 int Nes6502::SED()
 {
-    // set_d(1);
+    set_d(1);
     return 0;
 }
 int Nes6502::SEI()
