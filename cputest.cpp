@@ -43,32 +43,46 @@ std::vector<Log> load_testlog(){
         log.y = std::stoi(line.substr(60, 2), nullptr, 16);      // y
         log.p = std::stoi(line.substr(65, 2), nullptr, 16);      // status
         log.sp = std::stoi(line.substr(71, 2), nullptr, 16);     // sp
-        log.cyc = sstd::stoi(line.substr(90, ), nullptr, 16);  // clock
-        
-        fix clock reading
-
+        log.cyc = std::stoi(line.substr(90), nullptr, 16);  // clock
         logs.push_back(log);
     }
     nestest.close();
     return logs;
 }
 
-int main(){
-    load_testlog();
+void print_log(Log log){
+    std::cout << std::hex << std::setfill('0') << std::setw(4) << int(log.pc_addr) << "  ";
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)(log.byte1) << " ";
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)(log.byte2) << " ";
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)(log.byte3) << "  "; 
+    std::cout << "  " << log.instruction << "    ";
+    std::cout << "                ";
+    std::cout << "A:" << std::hex << std::setfill('0') << std::setw(2) << int(log.a) << " ";
+    std::cout << "X:" << std::hex << std::setfill('0') << std::setw(2) << int(log.x) << " ";
+    std::cout << "Y:" << std::hex << std::setfill('0') << std::setw(2) << int(log.y) << " ";
+    std::cout << "P:" << std::hex << std::setfill('0') << std::setw(2) << int(log.p) << " ";
+    std::cout << "SP:" << std::hex << std::setfill('0') << std::setw(2) << int(log.sp) << " ";
+    std::cout << "CYC:" << std::dec << log.cyc << " " << std::endl;
+}
 
+int main(){
+    std::vector<Log> nestest_logs;
+    nestest_logs = load_testlog();
     Nes6502 cpu;
+    cpu.pc = 0xC000;
     Bus bus;
     cpu.connect_bus(&bus);
     bus.set_cpu(&cpu);
     Cartridge test;
     bus.set_cartridge(&test);
-    
-    cpu.pc = 0xC000;
 
-    int count = 0xce5b;
-    do {
-        cpu.emulate_cycle();
-    } while(cpu.total_cycles <= 600);
+    for (auto log : nestest_logs)
+        print_log(log);
+
+    // int count = 0xce5b;
+    // do {
+    //     cpu.emulate_cycle();
+    // } while(cpu.total_cycles <= 600);
 
     // Full test
 
