@@ -181,12 +181,9 @@ void Nes6502::emulate_cycle()
 {
     if (cycles == 0){
         opcode = read(pc);
-
-        print_instruction();
-        print_status();
+        // print_status();
 
         pc++;
-        
         cycles += table[opcode].cycles;
         int extra_cycles = (this->*table[opcode].addrmode)();
         int need_extra = (this->*table[opcode].operation)();
@@ -197,16 +194,13 @@ void Nes6502::emulate_cycle()
     cycles--;
 }
 
-void Nes6502::print_instruction()
+void Nes6502::print_status()
 {
     std::cout << std::hex << std::setfill('0') << std::setw(4) << int(pc) << "  ";
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc) << " ";
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc+1) << " ";
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)read(pc+2) << "  "; 
     std::cout << "  " << table[opcode].opcode_name << " " << table[opcode].addrmode_name;
-}
-void Nes6502::print_status()
-{
     std::cout << "                ";
     std::cout << "A:" << std::hex << std::setfill('0') << std::setw(2) << int(a) << " ";
     std::cout << "X:" << std::hex << std::setfill('0') << std::setw(2) << int(x) << " ";
@@ -275,7 +269,7 @@ void Nes6502::set_d(uint8_t n)
 }
 void Nes6502::set_u(uint8_t n)
 {
-    status = (status & 0b11110111) | (n << 5);
+    status = (status & 0b11011111) | (n << 5);
 }
 
 // Flag getters
@@ -313,7 +307,8 @@ void Nes6502::s_push(uint8_t data)
 uint8_t Nes6502::s_pop()
 {
     sp++;
-    return read(s_offset + sp);
+    uint8_t data = read(s_offset + sp);
+    return data;
 }
 
 /*
@@ -455,13 +450,13 @@ int Nes6502::IDY()
 */
 int Nes6502::ADC()
 {
-    uint16_t ans = a + *operand + get_c();
+    uint16_t ans = a + *operand + get_c(); //here
     uint8_t msba = a >> 7;
     uint8_t msbr = ans >> 15;
     uint8_t msbm = *operand >> 7;
-    set_v((msba ^ msbr) & ~(msba ^ msbm));
+    set_v((msba ^ msbr) & (~(msba ^ msbm)));
     a = ans;
-    set_c(a > 0xff);
+    set_c(ans > 0xff);
     set_z(a == 0);
     set_n((a >> 7 == 1));
     return 1;

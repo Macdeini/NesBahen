@@ -3,9 +3,9 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include "6502.h"
-#include "bus.h"
-#include "cartridge.h"
+#include "NES/6502.h"
+#include "NES/bus.h"
+#include "NES/cartridge.h"
 
 // one line of data in the log file
 struct Log {
@@ -28,7 +28,7 @@ std::vector<Log> load_testlog(){
     std::ifstream nestest(file_location);
     std::string line;
     while(std::getline(nestest, line)) {
-        Log log;
+        Log log = Log();
         log.pc_addr = std::stoi(line.substr(0, 4), nullptr, 16); // pc address
         log.byte1 = std::stoi(line.substr(6, 2), nullptr, 16);   // byte 1
         std::string byte_temp = line.substr(9, 2);
@@ -43,10 +43,33 @@ std::vector<Log> load_testlog(){
         log.y = std::stoi(line.substr(60, 2), nullptr, 16);      // y
         log.p = std::stoi(line.substr(65, 2), nullptr, 16);      // status
         log.sp = std::stoi(line.substr(71, 2), nullptr, 16);     // sp
-        log.cyc = std::stoi(line.substr(90), nullptr, 16);  // clock
+        log.cyc = std::stoi(line.substr(90), nullptr, 10);  // clock
         logs.push_back(log);
     }
     nestest.close();
+    return logs;
+}
+
+std::vector<Log> get_cpu_log(Nes6502 cpu, int upperbound){
+    std::vector<Log> logs;
+    do {
+        if (cpu.cycles == 0) { // check if cpu has finished execution of instruction
+            Log log = Log();
+            log.pc_addr = cpu.pc;
+            log.byte1 = cpu.read(cpu.pc);
+            log.byte2 = cpu.read(cpu.pc + 1);
+            log.byte3 = cpu.read(cpu.pc + 2);
+            log.instruction = cpu.table[cpu.read(cpu.pc)].opcode_name;
+            log.a = cpu.a;
+            log.x = cpu.x;
+            log.y = cpu.y;
+            log.p = cpu.status;
+            log.sp = cpu.sp;
+            log.cyc = cpu.total_cycles;
+            logs.push_back(log);
+        }
+        cpu.emulate_cycle();
+    } while (cpu.total_cycles <= upperbound);
     return logs;
 }
 
@@ -65,9 +88,26 @@ void print_log(Log log){
     std::cout << "CYC:" << std::dec << log.cyc << " " << std::endl;
 }
 
+bool compare_log(Log log1, Log log2){
+    bool pctest = log1.pc_addr == log2.pc_addr;
+    bool byte1test = log1.byte1 == log2.byte1;
+    bool nametest = log1.instruction == log2.instruction;
+    bool atest = log1.a == log2.a;
+    bool xtest = log1.x == log2.x;
+    bool ytest = log1.y == log2.y;
+    bool ptest = log1.p == log2.p;
+    bool sptest = log1.sp == log2.sp;
+    bool clocktest = log1.cyc == log2.cyc;
+    std::array<bool, 9> test = {pctest, byte1test, nametest, atest, xtest, ytest, ptest, sptest, clocktest};
+    for (auto b : test){
+        if (b == false)
+            return false;
+    }
+    return true;
+}
+
 int main(){
-    std::vector<Log> nestest_logs;
-    nestest_logs = load_testlog();
+    std::vector<Log> nestest_logs = load_testlog();
     Nes6502 cpu;
     cpu.pc = 0xC000;
     Bus bus;
@@ -75,21 +115,35 @@ int main(){
     bus.set_cpu(&cpu);
     Cartridge test;
     bus.set_cartridge(&test);
+    const int end_of_test = 14575; // at pc = 0xC6BC
+    int upper = 750;
+    std::vector<Log> cpu_logs = get_cpu_log(cpu, upper);
 
-    for (auto log : nestest_logs)
-        print_log(log);
+    bool success = true;
+    for (int i = 0; i < cpu_logs.size(); ++i){
+        bool compare = compare_log(cpu_logs[i], nestest_logs[i]);
+        if (compare == false){
+            std::cout << "Mine" << std::endl;
+            std::cout << "  ";
+            print_log(cpu_logs[i-2]);
+            std::cout << "  ";
+            print_log(cpu_logs[i-1]);
+            std::cout << "  ";
+            print_log(cpu_logs[i]);
+            std::cout << "Them" << std::endl;
+            std::cout << "  ";
+            print_log(nestest_logs[i-2]);
+            std::cout << "  ";
+            print_log(nestest_logs[i-1]);
+            std::cout << "  ";
+            print_log(nestest_logs[i]);
+            success = false;
+            return 1;
+        }
+    }
 
-    // int count = 0xce5b;
-    // do {
-    //     cpu.emulate_cycle();
-    // } while(cpu.total_cycles <= 600);
-
-    // Full test
-
-    // do {
-    //     cpu.emulate_cycle();
-    // } while(cpu.pc != 0xC6BC);
-
+    if (success)
+        std::cout << "All tests pass" << std::endl;
 
     return 0;
 }

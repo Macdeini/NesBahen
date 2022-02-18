@@ -7,9 +7,12 @@
 			"args": [
 				"-g",
 				"-std=c++17",
-				"${workspaceFolder}\\*.cpp",
+				"${workspaceFolder}\\NES\\*.cpp",
+				"${workspaceFolder}\\testing\\*.cpp",
+                "-I",
+                "${workspaceFolder}",
 				"-o",
-				"${fileDirname}\\prog.exe"
+				"${workspaceFolder}\\prog.exe"
 			],
             "options": {
                 "cwd": "${fileDirname}"

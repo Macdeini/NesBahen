@@ -137,6 +137,5 @@ public:
 
     // Cycles is incremented/decremented here
     void emulate_cycle();
-    void print_instruction();
     void print_status();
 };
