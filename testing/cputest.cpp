@@ -24,7 +24,7 @@ struct Log {
 
 std::vector<Log> load_testlog(){
     std::vector<Log> logs;
-    std::string file_location = "testlogs/nestest.log.txt";
+    std::string file_location = "testing/nestest.log.txt";
     std::ifstream nestest(file_location);
     std::string line;
     while(std::getline(nestest, line)) {
