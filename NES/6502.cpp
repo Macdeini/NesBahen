@@ -450,12 +450,12 @@ int Nes6502::IDY()
 */
 int Nes6502::ADC()
 {
-    uint16_t ans = a + *operand + get_c(); //here
+    uint16_t ans = a + *operand + get_c(); 
     uint8_t msba = a >> 7;
-    uint8_t msbr = ans >> 15;
+    uint8_t msbr = (ans & 0xff) >> 7;
     uint8_t msbm = *operand >> 7;
     set_v((msba ^ msbr) & (~(msba ^ msbm)));
-    a = ans;
+    a = ans & 0xff;
     set_c(ans > 0xff);
     set_z(a == 0);
     set_n((a >> 7 == 1));
@@ -624,21 +624,21 @@ int Nes6502::CMP()
 {
     set_c(a >= *operand);
     set_z(a == *operand);
-    set_n(((a - *operand) >> 7) == 1);
+    set_n(((a - *operand) >> 7) != 0);
     return 1;
 }
 int Nes6502::CPX()
 {
     set_c(x >= *operand);
     set_z(x == *operand);
-    set_n(((x - *operand) >> 7) == 1);
+    set_n(((x - *operand) >> 7) != 0);
     return 0;
 }
 int Nes6502::CPY()
 {
     set_c(y >= *operand);
     set_z(y == *operand);
-    set_n(((y - *operand) >> 7) == 1);
+    set_n(((y - *operand) >> 7) != 0);
     return 0;
 }
 int Nes6502::DEC()
@@ -812,12 +812,16 @@ int Nes6502::RTS()
 }
 int Nes6502::SBC()
 {
-    uint16_t temp1 = *operand ^ 0x00ff; // getting complement
-    uint16_t temp2 = a + temp1 + get_c();
-    set_c(temp2 & 0xff00);
-    set_z((temp2 & 0x00ff) == 0);
-    set_v((temp2 ^ a) & (temp2 ^ temp1) & 0x0080);
-    set_n(temp2 & 0x0080);
+    //uint16_t negative_m = *operand ^ 0x00ff;   // getting two's complement (the +1 is implicit)
+    uint16_t new_a = a - *operand - (1 - get_c());
+    uint8_t msba = a >> 7;
+    uint8_t msbr = (new_a & 0xff) >> 7;
+    uint8_t msbm = (*operand ^ 0xff) >> 7;
+    set_v((msba ^ msbr) & (~(msba ^ msbm)));
+    a = new_a;
+    set_c(!(new_a > 0xff));
+    set_z(a == 0);
+    set_n((a >> 7) != 0);
     return 1;
 }
 int Nes6502::SEC()

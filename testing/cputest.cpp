@@ -116,7 +116,7 @@ int main(){
     Cartridge test;
     bus.set_cartridge(&test);
     const int end_of_test = 14575; // at pc = 0xC6BC
-    int upper = 750;
+    int upper = 1250;
     std::vector<Log> cpu_logs = get_cpu_log(cpu, upper);
 
     bool success = true;
