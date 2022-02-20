@@ -71,8 +71,8 @@ public:
     uint16_t jumpaddr = 0x0000;
 
     uint8_t temp = 0x00;
-    uint8_t* operand = &temp; // Don't actually need this, opcodes that edit memory don't use immediate addressing
-    
+    uint8_t* operand = &temp; // Accumulator addressing :Angynow:
+
     // fetch is only used under the context of setting operand to a value in memory
     // helper function for addressing functions
     void fetch();

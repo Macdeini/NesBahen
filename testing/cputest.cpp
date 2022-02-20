@@ -116,27 +116,25 @@ int main(){
     Cartridge test;
     bus.set_cartridge(&test);
     const int end_of_test = 14575; // at pc = 0xC6BC
-    int upper = 1250;
+    int upper = end_of_test;
     std::vector<Log> cpu_logs = get_cpu_log(cpu, upper);
+    int back = 2;
+    int front = 0; 
 
     bool success = true;
     for (int i = 0; i < cpu_logs.size(); ++i){
         bool compare = compare_log(cpu_logs[i], nestest_logs[i]);
         if (compare == false){
             std::cout << "Mine" << std::endl;
-            std::cout << "  ";
-            print_log(cpu_logs[i-2]);
-            std::cout << "  ";
-            print_log(cpu_logs[i-1]);
-            std::cout << "  ";
-            print_log(cpu_logs[i]);
+            for (int j = back; j >= -1 * front; j--){   
+                std::cout << "  ";
+                print_log(cpu_logs[i - j]);   
+            }
             std::cout << "Them" << std::endl;
-            std::cout << "  ";
-            print_log(nestest_logs[i-2]);
-            std::cout << "  ";
-            print_log(nestest_logs[i-1]);
-            std::cout << "  ";
-            print_log(nestest_logs[i]);
+            for (int j = back; j >= -1 * front; j--){   
+                std::cout << "  ";
+                print_log(nestest_logs[i - j]);   
+            }
             success = false;
             return 1;
         }

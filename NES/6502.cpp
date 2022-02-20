@@ -182,7 +182,6 @@ void Nes6502::emulate_cycle()
     if (cycles == 0){
         opcode = read(pc);
         // print_status();
-
         pc++;
         cycles += table[opcode].cycles;
         int extra_cycles = (this->*table[opcode].addrmode)();
@@ -418,8 +417,13 @@ int Nes6502::IND()
     addr_high = read(pc);
     pc++;
     addr = (addr_high << 8) | addr_low;
-    addr_indirect = (read(addr + 1) << 8) | read(addr);
+    if (addr_low == 0x00ff){
+        addr_indirect = (read(addr & 0xff00) << 8) | read(addr);
+    } else {
+        addr_indirect = (read(addr + 1) << 8) | read(addr);
+    }
     fetch_indirect();
+    jumpaddr = addr_indirect;
     return 0;
 }
 
@@ -427,7 +431,8 @@ int Nes6502::IDX()
 {
     addr = (read(pc) + x) & 0xff;
     pc++;
-    addr_indirect = (read(addr + 1) << 8) | read(addr);
+    uint8_t addr_hi = (addr + 1) & 0xff; // Indirect X has the hi byte and lo byte zero page wrap around independently
+    addr_indirect = (read(addr_hi) << 8) | read(addr);
     fetch_indirect();
     return 0;
 }
@@ -436,7 +441,8 @@ int Nes6502::IDY()
 {
     addr = read(pc);
     pc++;
-    addr_indirect = (read(addr + 1) << 8) | read(addr);
+    uint8_t addr_hi = (addr + 1) & 0xff;
+    addr_indirect = (read(addr_hi) << 8) | read(addr);
     uint16_t addr_indirect_before = addr_indirect;
     addr_indirect += y;
     fetch_indirect();
@@ -692,7 +698,7 @@ int Nes6502::INY()
 }
 int Nes6502::JMP()
 {   
-    pc = addr;
+    pc = jumpaddr;
     return 0;
 }
 // Might be finicky with how im pushing pc
@@ -700,8 +706,12 @@ int Nes6502::JMP()
 // With how I'm doing it pc is going to point to the next instruction byte after jmp addrlow addrhigh
 // by the time we reach here. We save pc, jmp and go do something else,
 // and then return to the byte of the next instruction
+
+// new comment: we'll push pc - 1 because nestest.log says so 
+// we've compensated by adding pc++ to RTS
 int Nes6502::JSR()
 {
+    pc = pc - 1;
     s_push(pc >> 8); // high
     s_push(pc & 0xff); // low 
     pc = jumpaddr;
@@ -730,7 +740,7 @@ int Nes6502::LDY()
 }
 int Nes6502::LSR()
 {
-    set_c((*operand >> 7)== 1);
+    set_c(*operand & 0x01);
     *operand = *operand >> 1;
     set_n((*operand >> 7)== 1);
     set_z(*operand == 0);
@@ -782,15 +792,19 @@ int Nes6502::ROL()
     *operand = *operand << 1;
     *operand = *operand & 0b11111110;
     *operand = *operand | temp;
+    set_z(a == 0);
+    set_n((*operand >> 7) != 0);
     return 0;
 }
 int Nes6502::ROR()
 {
     int temp = get_c();
-    set_c(*operand & 0b00000001);
+    set_c(*operand & 0x01);
     *operand = *operand >> 1;
     *operand = *operand & 0b01111111;
     *operand = *operand | (temp << 7);
+    set_z(a == 0);
+    set_n((*operand >> 7) != 0);
     return 0;
 }
 int Nes6502::RTI()
@@ -808,6 +822,7 @@ int Nes6502::RTS()
     int lo = s_pop();
     int hi = s_pop();
     pc = (hi << 8) | lo;
+    pc++;
     return 0;
 }
 int Nes6502::SBC()
