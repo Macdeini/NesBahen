@@ -418,7 +418,7 @@ int Nes6502::IND()
     pc++;
     addr = (addr_high << 8) | addr_low;
     if (addr_low == 0x00ff){
-        addr_indirect = (read(addr & 0xff00) << 8) | read(addr);
+        addr_indirect = (read(addr & 0xff00) << 8) | read(addr); // emulate hardware bug
     } else {
         addr_indirect = (read(addr + 1) << 8) | read(addr);
     }
