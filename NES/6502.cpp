@@ -230,11 +230,11 @@ uint8_t Nes6502::read(uint16_t addr)
 
 void Nes6502::fetch()
 {
-    operand = bus->fetch(this->addr);
+    operand = bus->cpu_fetch(this->addr);
 }
 void Nes6502::fetch_indirect()
 {
-    operand = bus->fetch(this->addr_indirect);
+    operand = bus->cpu_fetch(this->addr_indirect);
 }
 
 // Flag setters: n is 0 or 1 

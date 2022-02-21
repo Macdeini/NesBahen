@@ -106,7 +106,7 @@ bool compare_log(Log log1, Log log2){
     return true;
 }
 
-int main(){
+int run_nestest(){
     std::vector<Log> nestest_logs = load_testlog();
     Nes6502 cpu;
     cpu.pc = 0xC000;
@@ -143,5 +143,10 @@ int main(){
     if (success)
         std::cout << "All tests pass" << std::endl;
 
+    return 0;
+}
+
+int main(){
+    run_nestest();
     return 0;
 }

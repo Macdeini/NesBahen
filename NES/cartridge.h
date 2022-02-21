@@ -1,7 +1,7 @@
 #pragma once
-#include "cstdint"
-#include "vector"
-#include "array"
+#include <cstdint>
+#include <vector>
+#include <array>
 
 class Cartridge
 {
@@ -32,8 +32,8 @@ public:
 
     uint8_t read_prg(uint16_t addr);
     void write_prg(uint16_t addr, uint8_t data);
+    uint8_t* fetch(uint16_t addr);
+
     uint8_t read_chr(uint16_t addr);
     void write_chr(uint16_t addr, uint8_t data);
-
-    uint8_t* fetch(uint16_t addr);
 };

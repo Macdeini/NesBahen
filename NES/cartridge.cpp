@@ -99,6 +99,19 @@ uint8_t* Cartridge::fetch(uint16_t addr)
     return nullptr;
 }
 
+uint8_t Cartridge::read_chr(uint16_t addr)
+{
+    if (addr < 0 || addr >= 0x2000)
+        return 0;
+    return chr_rom[addr];
+}
+void Cartridge::write_chr(uint16_t addr, uint8_t data)
+{
+    if (addr < 0 || addr >= 0x2000)
+        return;
+    chr_rom[addr] = data;
+}
+
 Cartridge::~Cartridge()
 {
 }

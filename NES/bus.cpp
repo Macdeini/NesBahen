@@ -40,11 +40,25 @@ void Bus::cpu_write(uint16_t addr, uint8_t data)
         return cartridge->write_prg(addr - 0x8000, data);
 }
 
-uint8_t* Bus::fetch(uint16_t addr) 
+uint8_t* Bus::cpu_fetch(uint16_t addr) 
 {
     if (0 <= addr && addr <= 0x1fff)
         return &cpu_ram[addr & 0x07ff];
     if (0x8000 <= addr && addr <= 0xffff) // reading from cartridge rom
         return cartridge->fetch(addr - 0x8000);
     return nullptr;
+}
+
+uint8_t Bus::ppu_read(uint16_t addr)
+{
+    if (0 < addr || addr >= 0x2000)
+        return 0;
+    return cartridge->read_chr(addr);
+}
+
+void Bus::ppu_write(uint16_t addr, uint8_t data)
+{
+    if (0 < addr || addr >= 0x2000)
+        return;
+    return cartridge->write_chr(addr, data);
 }

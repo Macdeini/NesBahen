@@ -1,14 +1,18 @@
 #pragma once 
-#include "array"
-#include "cstdint"
+#include <stdint.h>
+#include "bus.h"
+
+class Bus;
 
 class PPU
 {
+public:
     PPU();
     ~PPU();
+
+    Bus* bus = nullptr;
+    void connect_bus(Bus* b);
     
-    std::array<uint8_t, 0x20> palette_table;
-    std::array<uint8_t, 0x800> vram;
-    std::array<uint8_t, 0x100> oam;
-    
+    uint8_t read(uint16_t addr);
+    void write(uint16_t addr, uint8_t data);
 };
