@@ -4,7 +4,7 @@
 
 void Cartridge::dump_rom()
 {
-    std::ifstream file("roms/nestest.nes", std::ios::binary);
+    std::ifstream file("roms/mario.nes", std::ios::binary);
     dump = std::vector<uint8_t>((std::istreambuf_iterator<char>(file)),
                               std::istreambuf_iterator<char>());
     file.close();
