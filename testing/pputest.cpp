@@ -1,12 +1,11 @@
-#include <SDL2/SDL.h>
 #include <iostream>
 #include "NES/6502.h"
 #include "NES/bus.h"
 #include "NES/cartridge.h"
 #include "NES/ppu.h"
 
-#define SCREEN_WIDTH 1280 
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 256 
+#define SCREEN_HEIGHT 240
 
 int main(int argc, char** argv){
     Nes6502 cpu;
@@ -14,6 +13,7 @@ int main(int argc, char** argv){
     Cartridge cartridge;
     PPU ppu;
     ppu.connect_bus(&bus);
+    ppu.construct_pattern_memory(); // error
     cpu.connect_bus(&bus);
     bus.set_cpu(&cpu);
     bus.set_ppu(&ppu);
@@ -34,6 +34,18 @@ int main(int argc, char** argv){
         return 1;
     }
 
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+
+    int x = 0;
+    int y = 0;
+
+    for (int i = 0; i < 256; i++){
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderDrawPoint(renderer, x, y);
+        x++;
+    }
+
     bool running = true;
     while(running){
         SDL_Event event;
@@ -48,8 +60,6 @@ int main(int argc, char** argv){
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderClear(renderer);
 
         SDL_RenderPresent(renderer);
     }
