@@ -49,16 +49,19 @@ uint8_t* Bus::cpu_fetch(uint16_t addr)
     return nullptr;
 }
 
+// $0000-1fff addressing range for PPU indicate CHR memory on cartridge
 uint8_t Bus::ppu_read(uint16_t addr)
 {
-    if (0 < addr || addr >= 0x2000)
-        return 0;
-    return cartridge->read_chr(addr);
+    if (0 <= addr && addr <= 0x1fff) {
+        return cartridge->read_chr(addr);
+    }
+    return 0;
 }
 
 void Bus::ppu_write(uint16_t addr, uint8_t data)
 {
-    if (0 < addr || addr >= 0x2000)
-        return;
-    return cartridge->write_chr(addr, data);
+    if (0 <= addr && addr <= 0x1fff)
+        return cartridge->write_chr(addr, data);
+    return;
+    
 }

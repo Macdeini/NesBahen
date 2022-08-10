@@ -41,36 +41,26 @@ PPU::Tile PPU::construct_tile(uint16_t addr)
     //construct tile from msbm and lsbm
     uint8_t low_bit;
     uint8_t high_bit;
+    // goes from top to bottom, right to left
     for (int i = 0; i < bitmap_size; i++){
         for (int j = 0; j < bitmap_size; j++){
-            low_bit = tile.lsbm[i] & (1 << j);
-            high_bit = tile.msbm[i] & (1 << j);
-            tile.pixel_pattern[i][bitmap_size - j - 1] = low_bit + (high_bit * 2);
+            low_bit = (tile.lsbm[i] & (1 << j)) >> j;
+            high_bit = (tile.msbm[i] & (1 << j)) >> j;
+            tile.pixel_pattern[bitmap_size - j - 1][i] = low_bit + (high_bit * 2);
         }
     }
     return tile;
 }
 
-void PPU::construct_left_tiles()
-{
-    int tile_count = 0; 
-    for (int addr = 0; addr < 0x1000; addr += 0x10){
-        left_tiles[tile_count] = construct_tile(addr);
-        tile_count++;
-    }
-}
-
-void PPU::construct_right_tiles()
-{
-    int tile_count = 0; 
-    for (int addr = 0x1000; addr < 0x2000; addr += 0x10){
-        left_tiles[tile_count] = construct_tile(addr);
-        tile_count++;
-    }
-}
-
+/**
+ * @brief Gets all the tile memory and saves it 
+ * 
+ */
 void PPU::construct_pattern_memory()
 {
-    construct_left_tiles();
-    construct_right_tiles();
+    int tile_count = 0; 
+    for (int addr = 0; addr < 0x2000; addr += 0x10){
+        tiles[tile_count] = construct_tile(addr);
+        tile_count++;
+    }
 }
