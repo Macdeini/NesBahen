@@ -35,30 +35,33 @@ uint8_t Bus::cpu_read(uint16_t addr)
         uint16_t ppu_register = (addr % 0x2000) % 8;
         switch (ppu_register) {
             case 0:
-                return ppu->PPU_CTRL;
+                return ppu->read_PPU_CTRL();
                 break;
             case 1:
-                return ppu->PPU_MASK;
+                return ppu->read_PPU_MASK();
                 break;
             case 2:
-                return ppu->PPU_STATUS; 
+                return ppu->read_PPU_STATUS(); 
                 break;
             case 3:
-                return ppu->OAM_ADDR; 
+                return ppu->read_OAM_ADDR(); 
                 break;
             case 4:
-                return ppu->OAM_DATA; 
+                return ppu->read_OAM_DATA(); 
                 break;
             case 5:
-                return ppu->PPU_SCROLL; 
+                return ppu->read_PPU_SCROLL(); 
                 break;
             case 6:
-                return ppu->PPU_ADDR; 
+                return ppu->read_PPU_ADDR(); 
                 break;
             case 7:
-                return ppu->PPU_DATA;
+                return ppu->read_PPU_DATA();
                 break;
         }
+    }
+    if (addr == 0x4014) { // OAMDMA PPU register
+        return ppu->read_OAM_DMA();
     }
     if (0x8000 <= addr && addr <= 0xffff) { // reading from cartridge rom
         return cartridge->read_prg(addr - 0x8000);
@@ -78,33 +81,33 @@ void Bus::cpu_write(uint16_t addr, uint8_t data)
         uint16_t ppu_register = (addr % 0x2000) % 8;
         switch (ppu_register) {
             case 0:
-                ppu->PPU_CTRL = data; 
+                ppu->write_PPU_CTRL(data);
                 break;
             case 1:
-                ppu->PPU_MASK = data;
+                ppu->write_PPU_MASK(data);
                 break;
             case 2:
-                ppu->PPU_STATUS = data; 
+                ppu->write_PPU_STATUS(data); 
                 break;
             case 3:
-                ppu->OAM_ADDR = data; 
+                ppu->write_OAM_ADDR(data); 
                 break;
             case 4:
-                ppu->OAM_DATA = data; 
+                ppu->write_OAM_DATA(data); 
                 break;
             case 5:
-                ppu->PPU_SCROLL = data; 
+                ppu->write_PPU_SCROLL(data); 
                 break;
             case 6:
-                ppu->PPU_ADDR = data; 
+                ppu->write_PPU_ADDR(data); 
                 break;
             case 7:
-                ppu->PPU_DATA = data;
+                ppu->write_PPU_DATA(data);
                 break;
         }
     }
     if (addr == 0x4014) { // OAMDMA PPU register
-        ppu->OAM_DMA = data;
+        ppu->write_OAM_DMA(data);
     }
     if (0x8000 <= addr && addr <= 0xffff) { // cartridge rom
         cartridge->write_prg(addr - 0x8000, data);

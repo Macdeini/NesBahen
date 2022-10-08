@@ -34,6 +34,26 @@ public:
     uint8_t PPU_ADDR = 0; 
     uint8_t PPU_DATA = 0; 
     uint8_t OAM_DMA = 0; 
+
+    uint8_t read_PPU_CTRL();
+    uint8_t read_PPU_MASK();
+    uint8_t read_PPU_STATUS();
+    uint8_t read_OAM_ADDR();
+    uint8_t read_OAM_DATA();
+    uint8_t read_PPU_SCROLL();
+    uint8_t read_PPU_ADDR();
+    uint8_t read_PPU_DATA();
+    uint8_t read_OAM_DMA();
+    
+    void write_PPU_CTRL(uint8_t data);
+    void write_PPU_MASK(uint8_t data);
+    void write_PPU_STATUS(uint8_t data);
+    void write_OAM_ADDR(uint8_t data);
+    void write_OAM_DATA(uint8_t data);
+    void write_PPU_SCROLL(uint8_t data);
+    void write_PPU_ADDR(uint8_t data);
+    void write_PPU_DATA(uint8_t data);
+    void write_OAM_DMA(uint8_t data);
     
     const int bitmap_size = 0x8;
     struct Tile {

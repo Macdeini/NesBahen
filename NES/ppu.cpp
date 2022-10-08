@@ -24,6 +24,80 @@ void PPU::write(uint16_t addr, uint8_t data)
         bus->ppu_write(addr, data);
 }
 
+// read registers 
+uint8_t PPU::read_PPU_CTRL() {
+    return PPU_CTRL;
+}
+
+uint8_t PPU::read_PPU_MASK() {
+    return PPU_MASK;
+}
+
+uint8_t PPU::read_PPU_STATUS() {
+    return PPU_STATUS;
+}
+
+uint8_t PPU::read_OAM_ADDR() {
+    return OAM_ADDR;
+}
+
+uint8_t PPU::read_OAM_DATA() {
+    return OAM_DATA;
+}
+
+uint8_t PPU::read_PPU_SCROLL() {
+    return PPU_SCROLL;
+}
+
+uint8_t PPU::read_PPU_ADDR() {
+    return PPU_ADDR;
+}
+
+uint8_t PPU::read_PPU_DATA() {
+    return PPU_DATA;
+}
+
+uint8_t PPU::read_OAM_DMA() {
+    return OAM_DMA;
+}
+
+// write registers
+void PPU::write_PPU_CTRL(uint8_t data) {
+    PPU_CTRL = data;
+}
+
+void PPU::write_PPU_MASK(uint8_t data) {
+    PPU_MASK = data;
+}
+
+void PPU::write_PPU_STATUS(uint8_t data) {
+    PPU_STATUS = data;
+}
+
+void PPU::write_OAM_ADDR(uint8_t data) {
+    OAM_ADDR = data;
+}
+
+void PPU::write_OAM_DATA(uint8_t data) {
+    OAM_DATA = data;
+}
+
+void PPU::write_PPU_SCROLL(uint8_t data) {
+    PPU_SCROLL = data;
+}
+
+void PPU::write_PPU_ADDR(uint8_t data) {
+    PPU_ADDR = data;
+}
+
+void PPU::write_PPU_DATA(uint8_t data) {
+    PPU_DATA = data;
+}
+
+void PPU::write_OAM_DMA(uint8_t data) {
+    OAM_DMA = data;
+}
+
 /*
 * Gets the Tile starting at addr
 */
