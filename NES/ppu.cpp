@@ -60,7 +60,7 @@ void PPU::construct_pattern_memory()
 {
     int tile_count = 0; 
     for (int addr = 0; addr < 0x2000; addr += 0x10){
-        tiles[tile_count] = construct_tile(addr);
+        pattern_tiles[tile_count] = construct_tile(addr);
         tile_count++;
     }
 }

@@ -25,10 +25,15 @@ public:
     void write(uint16_t addr, uint8_t data);
 
     // PPU registers
-    // From left to right:
-    // PPUCTRL PPUMASK PPUSTATUS OAMADDR OAMDATA PPUSCROLL PPUADDR PPUDATA
-    std::array<uint8_t, 8> ppu_registers = {0, 0, 0b10100000, 0, 0, 0, 0, 0};
-    uint8_t direct_memory_access = 0; 
+    uint8_t PPU_CTRL = 0; 
+    uint8_t PPU_MASK = 0; 
+    uint8_t PPU_STATUS = 0; 
+    uint8_t OAM_ADDR = 0; 
+    uint8_t OAM_DATA = 0; 
+    uint8_t PPU_SCROLL = 0; 
+    uint8_t PPU_ADDR = 0; 
+    uint8_t PPU_DATA = 0; 
+    uint8_t OAM_DMA = 0; 
     
     const int bitmap_size = 0x8;
     struct Tile {
@@ -40,7 +45,7 @@ public:
         // pixel_pattern is a 8x8 array where each entry represents the palette color at that pixel (0-3)
         std::array<std::array<uint8_t, 8>, 8> pixel_pattern;
     };
-    std::array<Tile, 512> tiles;  
+    std::array<Tile, 512> pattern_tiles;  
     PPU::Tile construct_tile(uint16_t addr);
     void construct_pattern_memory();
 

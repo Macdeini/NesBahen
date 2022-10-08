@@ -39,19 +39,9 @@ int main(int argc, char** argv){
     SDL_SetRenderDrawColor(renderer, ppu.palettes[test_palettes[0]][0], ppu.palettes[test_palettes[0]][1], ppu.palettes[test_palettes[0]][2], 255);
     SDL_RenderClear(renderer); 
 
-    // (0, 0) is top left
-    
-    // int x = 0; 
-    // for (PPU::Tile tile : ppu.tiles){
-    //     for (int i = 0; i < 8; i++){
-    //         std::cout <<"Tile #" << x << " " << "MSBT: " << (int)tile.msbm[i] << " LSBT: " << (int)tile.lsbm[i] << std::endl;
-    //     }
-    //     x++;
-    // }
-
     for (int x = 0; x < 16; x++){
         for (int y = 0; y < 16; y++) {
-            PPU::Tile tile = ppu.tiles[x + y * 16];
+            PPU::Tile tile = ppu.pattern_tiles[x + y * 16];
                 for (int i = 0; i < 8; i++) {
                     for (int j = 0; j < 8; j++) { 
                         SDL_SetRenderDrawColor(renderer, 
@@ -70,7 +60,7 @@ int main(int argc, char** argv){
 
     for (int x = 0; x < 16; x++){
         for (int y = 0; y < 16; y++) {
-            PPU::Tile tile = ppu.tiles[x + y * 16 + 256];
+            PPU::Tile tile = ppu.pattern_tiles[x + y * 16 + 256];
                 for (int i = 0; i < 8; i++) {
                     for (int j = 0; j < 8; j++) { 
                         SDL_SetRenderDrawColor(renderer, 
