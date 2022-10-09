@@ -24,6 +24,9 @@ public:
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t data);
 
+    int scanline = 0; 
+    int cycle = 0; 
+
     // PPU registers
     uint8_t PPU_CTRL = 0; 
     uint8_t PPU_MASK = 0; 
@@ -31,23 +34,18 @@ public:
     uint8_t OAM_ADDR = 0; 
     uint8_t OAM_DATA = 0; 
     uint8_t PPU_SCROLL = 0; 
-    uint8_t PPU_ADDR = 0; 
+    uint16_t PPU_ADDR = 0; 
     uint8_t PPU_DATA = 0; 
     uint8_t OAM_DMA = 0; 
 
-    uint8_t read_PPU_CTRL();
-    uint8_t read_PPU_MASK();
+    bool ppu_addr_latch = true; // true = write to high byte, false = write to low byte
+
     uint8_t read_PPU_STATUS();
-    uint8_t read_OAM_ADDR();
     uint8_t read_OAM_DATA();
-    uint8_t read_PPU_SCROLL();
-    uint8_t read_PPU_ADDR();
     uint8_t read_PPU_DATA();
-    uint8_t read_OAM_DMA();
     
     void write_PPU_CTRL(uint8_t data);
     void write_PPU_MASK(uint8_t data);
-    void write_PPU_STATUS(uint8_t data);
     void write_OAM_ADDR(uint8_t data);
     void write_OAM_DATA(uint8_t data);
     void write_PPU_SCROLL(uint8_t data);
@@ -82,6 +80,6 @@ public:
             {204, 210, 120}, {180, 222, 120}, {168, 226, 144}, {152, 226, 180}, {160, 214, 228}, {160, 162, 160}, {0, 0, 0},       {0, 0, 0} 
         }}; 
 
-    std::array<uint8_t, 0x1000> nametables;
+    std::array<uint8_t, 2048> nametables;
     std::array<uint8_t, 0x100> oam;  
 };

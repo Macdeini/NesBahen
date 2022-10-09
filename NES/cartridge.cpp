@@ -38,9 +38,9 @@ Cartridge::Cartridge()
     ram_num = dump[8];
 
     if (control_byte_1 >> 7) {
-        mirroring = Vertical;
+        mirroring = VERTICAL;
     } else {
-        mirroring = Horizontal;
+        mirroring = HORIZONTAL;
     }
     if ((control_byte_1 >> 3) & 0b00000001){
         mirroring = Four_Screen;

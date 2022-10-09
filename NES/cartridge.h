@@ -3,6 +3,8 @@
 #include <vector>
 #include <array>
 
+enum Mirroring {VERTICAL, HORIZONTAL, Four_Screen};
+
 class Cartridge
 {
 public:
@@ -27,7 +29,6 @@ public:
     std::array<uint8_t, 0x2000> chr_rom;
     std::array<uint8_t, 0x0800> prg_ram;
 
-    enum Mirroring {Vertical, Horizontal, Four_Screen};
     Mirroring mirroring;
 
     uint8_t read_prg(uint16_t addr);

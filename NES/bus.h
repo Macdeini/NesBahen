@@ -33,4 +33,6 @@ public:
     // These should only be used when accessing pattern memory on the cartridge
     void ppu_write(uint16_t addr, uint8_t data);
     uint8_t ppu_read(uint16_t addr);
+
+    Mirroring get_nametable_mirroring();
 };

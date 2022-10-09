@@ -35,33 +35,25 @@ uint8_t Bus::cpu_read(uint16_t addr)
         uint16_t ppu_register = (addr % 0x2000) % 8;
         switch (ppu_register) {
             case 0:
-                return ppu->read_PPU_CTRL();
                 break;
             case 1:
-                return ppu->read_PPU_MASK();
                 break;
             case 2:
                 return ppu->read_PPU_STATUS(); 
                 break;
             case 3:
-                return ppu->read_OAM_ADDR(); 
                 break;
             case 4:
                 return ppu->read_OAM_DATA(); 
                 break;
             case 5:
-                return ppu->read_PPU_SCROLL(); 
                 break;
             case 6:
-                return ppu->read_PPU_ADDR(); 
                 break;
             case 7:
                 return ppu->read_PPU_DATA();
                 break;
         }
-    }
-    if (addr == 0x4014) { // OAMDMA PPU register
-        return ppu->read_OAM_DMA();
     }
     if (0x8000 <= addr && addr <= 0xffff) { // reading from cartridge rom
         return cartridge->read_prg(addr - 0x8000);
@@ -87,7 +79,6 @@ void Bus::cpu_write(uint16_t addr, uint8_t data)
                 ppu->write_PPU_MASK(data);
                 break;
             case 2:
-                ppu->write_PPU_STATUS(data); 
                 break;
             case 3:
                 ppu->write_OAM_ADDR(data); 
@@ -138,4 +129,9 @@ void Bus::ppu_write(uint16_t addr, uint8_t data)
         return cartridge->write_chr(addr, data);
     return;
     
+}
+
+Mirroring Bus::get_nametable_mirroring() 
+{
+    return cartridge->mirroring;
 }
